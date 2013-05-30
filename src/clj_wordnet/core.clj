@@ -1,6 +1,6 @@
 (ns clj-wordnet.core
-  (:require [swiss-arrows.core :refer :all])
-  (:use [clojure.java.io :only [file]])
+  (:use [clojure.java.io :only [file]]
+        [clojure.string :only [upper-case lower-case]])
   (:import [edu.mit.jwi IDictionary Dictionary RAMDictionary]
            [edu.mit.jwi.item IWordID Word POS Pointer]))
 
@@ -26,7 +26,7 @@
   [k]
   (if (instance? POS k)
     k
-    (POS/valueOf (clojure.string/upper-case (name k)))))
+    (POS/valueOf (upper-case (name k)))))
 
 (defn- from-java 
   "Descends down into each word, expanding synonyms that have not been
@@ -37,6 +37,7 @@
         next-yak (fn [& words] (map #(from-java dict % seen) words))
         ]
   { :id (.getID word)
+    :pos   (-> word .getPOS .name lower-case keyword)
     :lemma (.getLemma word)
     :gloss (.getGloss synset)
     :synonyms (->> 
@@ -74,7 +75,7 @@
  
 (def run (first (wordnet "run" :verb)))
  
-(:lemma dog)
+(:pos dog)
  
 (:gloss dog)
  
@@ -86,5 +87,8 @@
 ((:related dog) :hypernym)
 )  
 
-) 
+  
+ 
+  
+  ) 
 
