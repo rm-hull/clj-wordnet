@@ -59,7 +59,7 @@ separately from [here](http://wordnet.princeton.edu/wordnet/download/current-ver
 => ("domestic_dog", "Canis_familiaris")
 ```
 
-## TOOD
+## TODO
 
 * Implement ```(make-dictionary "../path-to/wordnet/dict/" :in-memory)``` to use
   RAM-based dictionary
