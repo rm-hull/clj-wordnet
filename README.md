@@ -71,6 +71,8 @@ separately from [here](http://wordnet.princeton.edu/wordnet/download/current-ver
 
 * Re-implement ```(related-synsets ...)``` and ```(related-words ...)```
 
+* Push JWI 2.2.4 to central repository
+
 ## License
 
 Same as JWI: MIT / [Creative Commons 3.0](http://creativecommons.org/licenses/by/3.0/legalcode)
