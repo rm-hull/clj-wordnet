@@ -11,7 +11,7 @@
   [^IDictionary dict ^Word word seen]
   (let [synset (.getSynset word)
         seen   (conj seen word)
-        next-yak (fn [& words] (map #(from-java dict % seen) words))
+        next-yak (fn [words] (map #(from-java dict % seen) words))
         ]
   { :id (.getID word)
     :pos   (-> word .getPOS .name lower-case keyword)
@@ -21,13 +21,13 @@
                 (.getWords synset) 
                 set 
                 (remove seen)
-                (apply next-yak))
+                next-yak)
     :dict dict
     :related (fn [ptr] (->>
                          ;(.getRelatedWords word (coerce/pointer ptr))
                          ;(map next-yak)
                          (.getRelatedSynsets synset (coerce/pointer ptr))
-                         (map #(apply next-yak (.getWords (.getSynset dict %))))
+                         (map #(next-yak (.getWords (.getSynset dict %))))
                          ))}))
 
 (defn- word [^IDictionary dict ^IWordID word-id]
@@ -62,8 +62,8 @@
  
 (:synonyms dog)
  
-(clojure.pprint/pprint 
-((:related dog) :hypernym)
-)  
+(clojure.pprint/pprint ((:related dog) :hypernym))  
+
+(clojure.pprint/pprint dog)  
   
 ) 
