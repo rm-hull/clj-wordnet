@@ -64,7 +64,7 @@ separately from [here](http://wordnet.princeton.edu/wordnet/download/current-ver
 * Implement ```(make-dictionary "../path-to/wordnet/dict/" :in-memory)``` to use
   RAM-based dictionary
 
-* Coerce functions into separate namespace
+* ~~Coerce functions into separate namespace~~
 
 * Re-implement ```(related-synsets ...)``` and ```(related-words ...)```
 

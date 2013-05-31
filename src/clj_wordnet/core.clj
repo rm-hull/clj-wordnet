@@ -1,32 +1,9 @@
 (ns clj-wordnet.core
   (:use [clojure.java.io :only [file]]
         [clojure.string :only [upper-case lower-case]])
+  (:require [clj-wordnet.coerce :as coerce])
   (:import [edu.mit.jwi IDictionary Dictionary RAMDictionary]
            [edu.mit.jwi.item IWordID Word POS Pointer]))
-
-(def pointer-lookup
-  { :also-see Pointer/ALSO_SEE
-    :antonym  Pointer/ANTONYM
-    :cause    Pointer/CAUSE
-    :hypernym Pointer/HYPERNYM
-    :hyponym  Pointer/HYPONYM
-    :similar-to Pointer/SIMILAR_TO
-   }
-  )
-
-(defn- coerce-pointer 
-  "Attempts to coerce a keyword, symbol or string into a POINTER enum"
-  [k]
-  (if (instance? Pointer k)
-    k
-    (pointer-lookup k)))
-
-(defn- coerce-pos 
-  "Attempts to coerce a keyword, symbol or string into a POS enum"
-  [k]
-  (if (instance? POS k)
-    k
-    (POS/valueOf (upper-case (name k)))))
 
 (defn- from-java 
   "Descends down into each word, expanding synonyms that have not been
@@ -45,10 +22,11 @@
                 set 
                 (remove seen)
                 (apply next-yak))
+    :dict dict
     :related (fn [ptr] (->>
-                         ;(.getRelatedWords word (coerce-pointer ptr))
+                         ;(.getRelatedWords word (coerce/pointer ptr))
                          ;(map next-yak)
-                         (.getRelatedSynsets synset (coerce-pointer ptr))
+                         (.getRelatedSynsets synset (coerce/pointer ptr))
                          (map #(apply next-yak (.getWords (.getSynset dict %))))
                          ))}))
 
@@ -63,7 +41,8 @@
   (let [dict (Dictionary. (file wordnet-dir))]
     (.open dict)
     (fn [lemma part-of-speech]
-      (map (partial word dict) (.getWordIDs (.getIndexWord dict lemma (coerce-pos part-of-speech)))))))
+      (map (partial word dict) (.getWordIDs (.getIndexWord dict lemma (coerce/pos part-of-speech)))))))
+
 
 (comment 
 
@@ -86,9 +65,5 @@
 (clojure.pprint/pprint 
 ((:related dog) :hypernym)
 )  
-
   
- 
-  
-  ) 
-
+) 
