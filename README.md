@@ -50,6 +50,9 @@ separately from [here](http://wordnet.princeton.edu/wordnet/download/current-ver
 (:lemma dog)
 => "dog"
 
+(:pos dog)
+=> :noun
+
 (:gloss dog)
 => "a member of the genus Canis (probably descended from the common wolf) that
     has been domesticated by man since prehistoric times; occurs in many breeds; 
