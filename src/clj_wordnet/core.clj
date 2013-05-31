@@ -3,7 +3,8 @@
         [clojure.string :only [upper-case lower-case]])
   (:require [clj-wordnet.coerce :as coerce])
   (:import [edu.mit.jwi IDictionary Dictionary RAMDictionary]
-           [edu.mit.jwi.item IWordID IWord Word]))
+           [edu.mit.jwi.item IWordID IWord Word]
+           [edu.mit.jwi.data ILoadPolicy]))  
 
 (defn- from-java 
   "Descends down into each word, expanding synonyms that have not been
@@ -27,9 +28,12 @@
   "Initializes a dictionary implementation that mounts files on disk
    and has caching, returns a function which takes a lemma and part-of-speech
    and returns list of matching entries"
-  [wordnet-dir]
-  (let [dict (Dictionary. (file wordnet-dir))]
-    (.open dict)
+  [wordnet-dir & opt-flags]
+  (let [file (file wordnet-dir)
+        ^IDictionary dict (if (:in-memory (set opt-flags))
+                            (RAMDictionary. file ILoadPolicy/IMMEDIATE_LOAD)  
+                            (Dictionary. file))]
+      (.open dict)
     (fn [lemma part-of-speech]
       (map 
         (partial fetch-word dict) 

@@ -70,6 +70,23 @@ separately from [here](http://wordnet.princeton.edu/wordnet/download/current-ver
 => ("domestic_animal" "domesticated_animal" "canine" "canid")
 ```
 
+## Dictionary
+
+The default dictionary will load definitions from the database as needed
+and they will be cached as necessary. If higher performance is required
+and there is sufficient memory available to the JVM, then the dictionary 
+can be made to be resident entirely in memory, as below. This will force 
+an immediate load of the dictionary into RAM, where there may be a 
+perceptible delay on startup. 
+
+```clojure
+(def wordnet (make-dictionary "../path-to/wordnet/dict/") :in-memory)
+```
+
+Note: Wordnet is quite large, and usually won’t fit into the standard heap on most
+32-bit JVMs. You need to increase your heap size. On the Sun JVM, this involves 
+the command line flag -Xmx along with a reasonable heap size, say, 500 MB or 1 GB.
+
 ## Coersion
 
 Wherever possible, using clojure keywords are preferred over JWI-specific enums and
@@ -84,14 +101,16 @@ Note: case is not important, and dashes are coverted to/from underscores.
 
 ## TODO
 
-* Implement ```(make-dictionary "../path-to/wordnet/dict/" :in-memory)``` to use
-  RAM-based dictionary
+* ~~Implement ```(make-dictionary "../path-to/wordnet/dict/" :in-memory)``` to use
+  RAM-based dictionary~~
 
 * ~~Coerce functions into separate namespace~~
 
 * ~~Re-implement ```(related-synsets ...)``` and ```(related-words ...)```~~
 
 * Push JWI 2.2.4 to central repository
+
+* Unit tests & Travis CI
 
 ## License
 
