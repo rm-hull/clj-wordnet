@@ -60,7 +60,27 @@ separately from [here](http://wordnet.princeton.edu/wordnet/download/current-ver
 
 (map :lemma (:synonyms dog))
 => ("domestic_dog", "Canis_familiaris")
+
+(def frump (first (wordnet "frump" :noun)))
+
+(map :lemma (related-words frump :derivationally-related))) 
+=> ("frumpy")
+
+(map :lemma (flatten (vals (related-synsets dog :hypernym))))
+=> ("domestic_animal" "domesticated_animal" "canine" "canid")
 ```
+
+## Coersion
+
+Wherever possible, using clojure keywords are preferred over JWI-specific enums and
+static constants. However, it is entirely possible to use the JWI class instances
+interchangeably. For example, 
+
+* the ```POS.NOUN``` enum can be replaced with ```:noun```,
+
+* the ```Pointer.DERIVED_FROM_ADJ``` constant can be replaced with ```:derived-from-adj```
+
+Note: case is not important, and dashes are coverted to/from underscores.
 
 ## TODO
 
@@ -69,7 +89,7 @@ separately from [here](http://wordnet.princeton.edu/wordnet/download/current-ver
 
 * ~~Coerce functions into separate namespace~~
 
-* Re-implement ```(related-synsets ...)``` and ```(related-words ...)```
+* ~~Re-implement ```(related-synsets ...)``` and ```(related-words ...)```~~
 
 * Push JWI 2.2.4 to central repository
 
