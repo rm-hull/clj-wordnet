@@ -20,7 +20,7 @@
     (fn [k]
       (if (instance? Pointer k)
         k
-        (pointer-lookup (to-keyword k))))))
+        (lut (to-keyword k))))))
 
 (defn pos 
   "Attempts to coerce a keyword, symbol or string into a POS enum"
