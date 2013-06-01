@@ -28,7 +28,3 @@
   (if (instance? POS k)
     k
     (POS/valueOf (str/upper-case (name k)))))
-
-(pointer :also-see)
-
-(clojure.pprint/pprint pointer-lookup)
