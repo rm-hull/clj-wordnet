@@ -3,7 +3,7 @@
         [clojure.string :only [upper-case lower-case]])
   (:require [clj-wordnet.coerce :as coerce])
   (:import [edu.mit.jwi IDictionary Dictionary RAMDictionary]
-           [edu.mit.jwi.item IWordID IWord Word]
+           [edu.mit.jwi.item IWordID IWord Word POS]
            [edu.mit.jwi.data ILoadPolicy]))  
 
 (defn- from-java 
@@ -24,6 +24,10 @@
 (defn- fetch-word [^IDictionary dict ^IWordID word-id]
   (from-java dict (.getWord dict word-id)))
 
+(defn- word-ids [^IDictionary dict lemma part-of-speech]
+  (if-let [index-word (.getIndexWord dict lemma (coerce/pos part-of-speech))]
+    (.getWordIDs index-word)))
+
 (defn make-dictionary 
   "Initializes a dictionary implementation that mounts files on disk
    and has caching, returns a function which takes a lemma and part-of-speech
@@ -34,10 +38,11 @@
                             (RAMDictionary. file ILoadPolicy/IMMEDIATE_LOAD)  
                             (Dictionary. file))]
       (.open dict)
-    (fn [lemma part-of-speech]
-      (map 
-        (partial fetch-word dict) 
-        (.getWordIDs (.getIndexWord dict lemma (coerce/pos part-of-speech)))))))
+    (fn [lemma & part-of-speech]
+      (->> 
+        (if (nil? part-of-speech) (POS/values) part-of-speech)
+        (mapcat (partial word-ids dict lemma))
+        (pmap (partial fetch-word dict))))))
 
 (defn related-synsets 
   "Use a semantic pointer to fetch related synsets, returning a map of
