@@ -80,7 +80,7 @@ an immediate load of the dictionary into RAM, where there may be a
 perceptible delay on startup. 
 
 ```clojure
-(def wordnet (make-dictionary "../path-to/wordnet/dict/") :in-memory)
+(def wordnet (make-dictionary "../path-to/wordnet/dict/" :in-memory))
 ```
 
 Note: Wordnet is quite large, and usually won’t fit into the standard heap on most
