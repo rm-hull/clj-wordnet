@@ -1,6 +1,6 @@
-(defproject rm-hull/clj-wordnet "0.0.1"
+(defproject clj-wordnet "0.0.1"
   :description "A WordNet/JWI wrapper library"
-  :url "https://github.com/rm_hull/clj-wordnet"
+  :url "https://github.com/delver/clj-wordnet"
   :license {:name "Creative Commons 3.0"
             :url "http://creativecommons.org/licenses/by/3.0/legalcode"}
   :dependencies [[org.clojure/clojure "1.5.1"]

@@ -18,18 +18,18 @@ To build and install the library locally, run:
 
 ## Including in your project
 
-There (will be shortly) a version hosted at [Clojars](https://clojars.org/rm-hull/clj-wordnet).
+There is an initial version hosted at [Clojars](https://clojars.org/clj-wordnet/clj-wordnet).
 For leiningen include a dependency:
 
 ```clojure
-[rm-hull/clj-wordnet "0.0.1"]
+[clj-wordnet "0.0.1"]
 ```
     
 For maven-based projects, add the following to your `pom.xml`:
 
 ```xml
 <dependency>
-  <groupId>rm-hull</groupId>
+  <groupId>clj-wordnet</groupId>
   <artifactId>clj-wordnet</artifactId>
   <version>0.0.1</version>
 </dependency>
