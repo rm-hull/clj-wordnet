@@ -1,2 +1,5 @@
 target/
 .lein-repl-history
+/.lein-failures
+/pom.xml
+/pom.xml.asc
