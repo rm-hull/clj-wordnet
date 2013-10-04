@@ -7,7 +7,7 @@ database using idiomatic Clojure.
 
 ## Prerequisites
 
-You will need [Leiningen](https://github.com/technomancy/leiningen) 2.1.2 or
+You will need [Leiningen](https://github.com/technomancy/leiningen) 2.3.2 or
 above installed.
 
 ## Building
@@ -22,7 +22,7 @@ There is an initial version hosted at [Clojars](https://clojars.org/clj-wordnet/
 For leiningen include a dependency:
 
 ```clojure
-[clj-wordnet "0.0.1"]
+[clj-wordnet "0.0.2"]
 ```
     
 For maven-based projects, add the following to your `pom.xml`:
@@ -31,7 +31,7 @@ For maven-based projects, add the following to your `pom.xml`:
 <dependency>
   <groupId>clj-wordnet</groupId>
   <artifactId>clj-wordnet</artifactId>
-  <version>0.0.1</version>
+  <version>0.0.2</version>
 </dependency>
 ```
 
@@ -99,6 +99,12 @@ interchangeably. For example,
 
 Note: case is not important, and dashes are coverted to/from underscores.
 
+## See Also
+
+The JWI has been mavenized and rolled up into a github repo, here: https://github.com/delver/jwi.
+The resulting artifacts have been deployed to http://repo.delver.io/releases, and this has been 
+referenced in this project's repository resolution section.
+
 ## TODO
 
 * ~~Implement ```(make-dictionary "../path-to/wordnet/dict/" :in-memory)``` to use
@@ -108,7 +114,7 @@ Note: case is not important, and dashes are coverted to/from underscores.
 
 * ~~Re-implement ```(related-synsets ...)``` and ```(related-words ...)```~~
 
-* Push JWI 2.2.4 to central repository
+* ~~Push JWI 2.2.4 to central repository~~
 
 * Unit tests & Travis CI
 
