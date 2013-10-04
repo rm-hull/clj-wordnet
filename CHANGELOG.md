@@ -5,3 +5,6 @@ Changelog
 ------------------------------------
 * First release to Clojars.org
 
+0.0.2 (Fri Oct 04 2013)
+-----------------------
+* Updated to JWI 2.3.0
