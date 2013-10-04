@@ -22,7 +22,7 @@ There is an initial version hosted at [Clojars](https://clojars.org/clj-wordnet/
 For leiningen include a dependency:
 
 ```clojure
-[clj-wordnet "0.0.2"]
+[clj-wordnet "0.0.3"]
 ```
     
 For maven-based projects, add the following to your `pom.xml`:
@@ -31,7 +31,7 @@ For maven-based projects, add the following to your `pom.xml`:
 <dependency>
   <groupId>clj-wordnet</groupId>
   <artifactId>clj-wordnet</artifactId>
-  <version>0.0.2</version>
+  <version>0.0.3</version>
 </dependency>
 ```
 
