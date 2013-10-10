@@ -1,5 +1,5 @@
 (ns clj-wordnet.test.client
-  (:use [clojure.test] 
+  (:use [clojure.test]
         [clj-wordnet.core]))
 
 (def wordnet (make-dictionary "../delver/data/wordnet/dict"))
@@ -8,8 +8,15 @@
   (is (= "dog" (:lemma (first (wordnet "dog" :noun))))))
 
 (deftest fetch-without-pos
-  (is (= "dog" (:lemma (first (wordnet "dog"))))))
+  (is (= "dog" (:lemma (first (wordnet "dog "))))))
 
 (deftest fetch-unknown-word
-  (is (= '() (wordnet "fdssfsfs"))))
+  (is (empty? (wordnet "fdssfsfs"))))
+
+(deftest fetch-empty-word
+  (is (empty? (wordnet ""))))
+
+(deftest fetch-nil-word
+  (is (empty? (wordnet nil))))
+
 
