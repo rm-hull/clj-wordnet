@@ -22,7 +22,7 @@ There is an initial version hosted at [Clojars](https://clojars.org/clj-wordnet/
 For leiningen include a dependency:
 
 ```clojure
-[clj-wordnet "0.0.4"]
+[clj-wordnet "0.0.5"]
 ```
     
 For maven-based projects, add the following to your `pom.xml`:
@@ -31,7 +31,7 @@ For maven-based projects, add the following to your `pom.xml`:
 <dependency>
   <groupId>clj-wordnet</groupId>
   <artifactId>clj-wordnet</artifactId>
-  <version>0.0.4</version>
+  <version>0.0.5</version>
 </dependency>
 ```
 
@@ -63,7 +63,7 @@ separately from [here](http://wordnet.princeton.edu/wordnet/download/current-ver
 
 (def frump (first (wordnet "frump" :noun)))
 
-(map :lemma (related-words frump :derivationally-related))) 
+(map :lemma (related-words frump :derivationally-related))
 => ("frumpy")
 
 (map :lemma (flatten (vals (related-synsets dog :hypernym))))

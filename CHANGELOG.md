@@ -17,3 +17,7 @@ Changelog
 -----------------------
 * Fixed reflection warnings
 * Nil and empty/trimmed string short circuiting
+
+0.0.5 (Sat Oct 19 2013)
+-----------------------
+* Fixed issue #3 - bug introduced in 0.0.3 handling related synsets

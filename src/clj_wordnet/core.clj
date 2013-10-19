@@ -64,8 +64,7 @@
         ^IWord word (:word m)]
     (apply merge-with concat
       (for [synset-id (.getRelatedSynsets (.getSynset word) (coerce/pointer pointer))
-            ^ISynset synset (locking coarse-lock (.getSynset dict synset-id))
-            word      (.getWords synset) ]
+            word      (.getWords (locking coarse-lock (.getSynset dict synset-id)))]
         { synset-id [(from-java dict word)] }))))
 
 (defn related-words
