@@ -109,14 +109,14 @@ referenced in this project's repository resolution section.
 
 * ~~Implement ```(make-dictionary "../path-to/wordnet/dict/" :in-memory)``` to use
   RAM-based dictionary~~
-
 * ~~Coerce functions into separate namespace~~
-
 * ~~Re-implement ```(related-synsets ...)``` and ```(related-words ...)```~~
-
 * ~~Push JWI 2.2.4 to central repository~~
-
 * Unit tests & Travis CI
+
+## References
+
+* http://www.codeproject.com/Articles/11835/WordNet-based-semantic-similarity-measurement
 
 ## License
 
