@@ -3,11 +3,11 @@
   (:import [edu.mit.jwi.item POS Pointer]
            [java.lang.reflect Field]))
 
-(defn- to-keyword [k]
+(defn to-keyword [k]
   (-> 
     k
     name 
-    (str/replace "_" "-")
+    (str/replace #"[_ ]" "-")
     str/lower-case 
     keyword))
 
