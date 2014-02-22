@@ -2,7 +2,7 @@
   (:use [clojure.test]
         [clj-wordnet.core]))
 
-(def wordnet (make-dictionary "../delver/data/wordnet/dict"))
+(def wordnet (make-dictionary "/Users/thom/Downloads/dict"))
 
 (deftest fetch-with-noun
   (is (= "dog" (:lemma (first (wordnet "dog" :noun))))))
@@ -19,8 +19,11 @@
 (deftest fetch-nil-word
   (is (empty? (wordnet nil))))
 
+(deftest fetch-by-stemming
+  (is (= "dog" (:lemma (first (wordnet "dogs")))))
+  (is (= "buy" (:lemma (first (wordnet "bought"))))))
+
 (deftest relational-synset-test
   (let [dog (first (wordnet "dog" :noun))]
     (is (= '("domestic_animal" "domesticated_animal" "canine" "canid")
            (map :lemma (flatten (vals (related-synsets dog :hypernym))))))))
-

@@ -5,7 +5,8 @@
             [clojure.string :as s])
   (:import [edu.mit.jwi IDictionary Dictionary RAMDictionary]
            [edu.mit.jwi.item IIndexWord ISynset IWordID IWord Word POS]
-           [edu.mit.jwi.data ILoadPolicy]))
+           [edu.mit.jwi.data ILoadPolicy]
+           [edu.mit.jwi.morph WordnetStemmer]))
 
 ; JWI ICacheDictionary is not threadsafe
 (def coarse-lock (Object.))
@@ -31,12 +32,18 @@
     (locking coarse-lock
       (.getWord dict word-id))))
 
+(defn- stem [^IDictionary dict lemma part-of-speech]
+  (.findStems (WordnetStemmer. dict) lemma (coerce/pos part-of-speech)))
+
 (defn- word-ids [^IDictionary dict lemma part-of-speech]
   (let [pos (coerce/pos part-of-speech)
-        ^IIndexWord index-word (locking coarse-lock
-                     (.getIndexWord dict lemma pos))]
-    (when index-word
-      (.getWordIDs index-word))))
+        stems (stem dict lemma part-of-speech)]
+    (mapcat (memfn ^IIndexWord getWordIDs)
+            (for [stem stems
+                  :let [^IIndexWord index-word (locking coarse-lock
+                                                 (.getIndexWord dict stem pos))]
+                  :when index-word]
+              index-word))))
 
 (defn make-dictionary
   "Initializes a dictionary implementation that mounts files on disk
