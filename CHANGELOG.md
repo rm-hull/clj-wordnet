@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.0
+## 0.1.0 (Mon Feb 24 2014)
 * Updated leinigen version requirement
 * Updated to JWI 2.3.3
 * Add git submodule for wordnet database files for unit testing
