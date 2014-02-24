@@ -2,7 +2,7 @@
   (:use [clojure.test]
         [clj-wordnet.core]))
 
-(def wordnet (make-dictionary "/Users/thom/Downloads/dict"))
+(def wordnet (make-dictionary "./data/dict"))
 
 (deftest fetch-with-noun
   (is (= "dog" (:lemma (first (wordnet "dog" :noun))))))

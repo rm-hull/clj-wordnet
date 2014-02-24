@@ -1,5 +1,4 @@
-Clj-WordNet
-===========
+# Clj-WordNet [![Build Status](https://secure.travis-ci.org/delver/clj-wordnet.png)](http://travis-ci.org/delver/clj-wordnet)
 
 A thin/partial wrapper around some [JWI](http://projects.csail.mit.edu/jwi/) 
 functionality, for interfacing the [WordNet](http://wordnet.princeton.edu/) 
@@ -7,14 +6,16 @@ database using idiomatic Clojure.
 
 ## Prerequisites
 
-You will need [Leiningen](https://github.com/technomancy/leiningen) 2.3.2 or
-above installed.
+You will need [Leiningen](https://github.com/technomancy/leiningen) 
+2.3.4 or above installed.
 
 ## Building
 
 To build and install the library locally, run:
 
-     lein install
+    $ git submodule update --init data
+    $ lein test
+    $ lein install
 
 ## Including in your project
 
@@ -22,7 +23,7 @@ There is an initial version hosted at [Clojars](https://clojars.org/clj-wordnet/
 For leiningen include a dependency:
 
 ```clojure
-[clj-wordnet "0.0.5"]
+[clj-wordnet "0.1.0"]
 ```
     
 For maven-based projects, add the following to your `pom.xml`:
@@ -31,14 +32,16 @@ For maven-based projects, add the following to your `pom.xml`:
 <dependency>
   <groupId>clj-wordnet</groupId>
   <artifactId>clj-wordnet</artifactId>
-  <version>0.0.5</version>
+  <version>0.1.0</version>
 </dependency>
 ```
 
 ## WordNet Database
 
-The WordNet database is not bundled in this project; it must be downloaded
-separately from [here](http://wordnet.princeton.edu/wordnet/download/current-version/).
+The WordNet database is not bundled in this project; it is _referenced_ 
+via a git submodule, in order to run integration tests. In order to
+ensure the submodule is properly initialised, follow the build 
+instructions above.
 
 ## Examples
 
