@@ -36,6 +36,8 @@ For maven-based projects, add the following to your `pom.xml`:
 </dependency>
 ```
 
+A snapshot version is also available, use ```"0.1.1-SNAPSHOT"```.
+
 ## WordNet Database
 
 The WordNet database is not bundled in this project; it is _referenced_ 
