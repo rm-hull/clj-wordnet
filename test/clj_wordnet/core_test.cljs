@@ -1,8 +1,8 @@
-(ns clj-wordnet.test.client
-  (:use [clojure.test]
-        [clj-wordnet.core]))
-
-(def wordnet (make-dictionary "./data/dict"))
+(ns clj-wordnet.core-test
+  (:require
+    [clojure.test :refer :all]
+    [clj-wordnet.test-client :refer [wordnet]]
+    [clj-wordnet.core :refer :all]))
 
 (deftest fetch-with-noun
   (is (= "dog" (:lemma (first (wordnet "dog" :noun))))))
