@@ -25,5 +25,5 @@
 
 (deftest relational-synset-test
   (let [dog (first (wordnet "dog" :noun))]
-    (is (= '("domestic_animal" "domesticated_animal" "canine" "canid")
-           (map :lemma (flatten (vals (related-synsets dog :hypernym))))))))
+    (is (= ["domesticated_animal" "domestic_animal" "canid" "canine"])
+           (map :lemma (flatten (vals (related-synsets dog :hypernym)))))))

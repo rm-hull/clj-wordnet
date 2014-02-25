@@ -12,13 +12,14 @@
 (def coarse-lock (Object.))
 
 (defn- from-java
-  "Descends down into each word, expanding synonyms that have not been
-   previously seen"
+  "Lazily descends down into each word, expanding synonyms that have
+   not been previously seen."
   ([^IDictionary dict ^Word word] (from-java dict word #{}))
   ([^IDictionary dict ^Word word seen]
     (let [synset (.getSynset word)
           seen   (conj seen word)]
     { :id (.getID word)
+      :synset-id (.getID synset)
       :pos   (-> word .getPOS .name lower-case keyword)
       :lemma (.getLemma word)
       :gloss (.getGloss synset)
@@ -64,21 +65,40 @@
             (map (partial fetch-word dict))))))))
 
 (defn related-synsets
-  "Use a semantic pointer to fetch related synsets, returning a map of
-   synset-id -> list of words"
-  [m pointer]
-  (let [^IDictionary dict (:dict m)
-        ^IWord word (:word m)]
-    (apply merge-with concat
-      (for [synset-id (.getRelatedSynsets (.getSynset word) (coerce/pointer pointer))
-            word      (.getWords (locking coarse-lock (.getSynset dict synset-id)))]
-        { synset-id [(from-java dict word)] }))))
+  "Use a semantic pointer to fetch related synsets, returning an ordered
+   map of synset-id -> list of words"
+  [m & [pointer]]
+  (when m
+    (let [^IDictionary dict (:dict m)
+          ^IWord word (:word m)
+          related-synsets (if pointer
+                            (.getRelatedSynsets (.getSynset word) (coerce/pointer pointer))
+                            (.getRelatedSynsets (.getSynset word)))]
+      (apply merge-with (comp vec concat)
+        (for [synset-id related-synsets
+              word      (.getWords (locking coarse-lock (.getSynset dict synset-id)))]
+
+          (sorted-map-by
+            (comparator (fn [x y] (compare (str x) (str y))))
+            synset-id [(from-java dict word)]))))))
 
 (defn related-words
   "Use a lexical pointer to fetch related words, returning a list of words"
-  [m pointer]
+  [m & [pointer]]
   (let [^IDictionary dict (:dict m)
         ^IWord word (:word m)]
-    (map
-      (partial fetch-word dict)
-      (.getRelatedWords word (coerce/pointer pointer)))))
+    (when word
+      (map
+        (partial fetch-word dict)
+        (if pointer
+          (.getRelatedWords word (coerce/pointer pointer))
+          (.getRelatedWords word))))))
+
+(defn synset-words
+  [m]
+  (let [^IDictionary dict (:dict m)
+        ^IWord word (:word m)]
+    (when word
+      (map
+        (partial from-java dict)
+        (.getWords (.getSynset word))))))
