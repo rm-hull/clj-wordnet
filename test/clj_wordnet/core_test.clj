@@ -4,20 +4,18 @@
     [clj-wordnet.test-client :refer [wordnet]]
     [clj-wordnet.core :refer :all]))
 
-(deftest fetch-with-noun
+(deftest check-fetch
+  (is (empty? (wordnet "fdssfsfs")))
+  (is (empty? (wordnet "")))
+  (is (empty? (wordnet nil)))
   (is (= "dog" (:lemma (first (wordnet "dog" :noun))))))
+  (is (= "dog" (:lemma (first (wordnet "dog ")))))
+  (is (= "metal supports for logs in a fireplace; \"the andirons were too hot to touch\""
+         (:gloss (wordnet "dog#n#3"))))
 
-(deftest fetch-without-pos
-  (is (= "dog" (:lemma (first (wordnet "dog "))))))
-
-(deftest fetch-unknown-word
-  (is (empty? (wordnet "fdssfsfs"))))
-
-(deftest fetch-empty-word
-  (is (empty? (wordnet ""))))
-
-(deftest fetch-nil-word
-  (is (empty? (wordnet nil))))
+(deftest check-synonyms
+  (is (= ["dog" "domestic_dog" "Canis_familiaris"]
+         (map :lemma (synonyms (wordnet "dog#n#1"))))))
 
 (deftest fetch-by-stemming
   (is (= "dog" (:lemma (first (wordnet "dogs")))))

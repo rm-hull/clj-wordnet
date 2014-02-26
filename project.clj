@@ -4,6 +4,7 @@
   :license {:name "Creative Commons 3.0"
             :url "http://creativecommons.org/licenses/by/3.0/legalcode"}
   :dependencies [[org.clojure/clojure "1.5.1"]
+                 [potemkin "0.3.4"]
                  [edu.mit/jwi "2.3.3"]]
   :source-path "src"
   :min-lein-version "2.3.4"
