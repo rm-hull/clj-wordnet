@@ -12,18 +12,15 @@
 (def coarse-lock (Object.))
 
 (defn- from-java
-  "Lazily descends down into each word, expanding synonyms that have
-   not been previously seen."
-  ([^IDictionary dict ^Word word] (from-java dict word #{}))
-  ([^IDictionary dict ^Word word seen]
-    (let [synset (.getSynset word)
-          seen   (conj seen word)]
-    { :id (.getID word)
+  ([^IDictionary dict ^Word word]
+    (let [id (.getID word)
+          synset (.getSynset word)]
+    { :id id
       :synset-id (.getID synset)
       :pos   (-> word .getPOS .name lower-case keyword)
+      :number (.getWordNumber id)
       :lemma (.getLemma word)
       :gloss (.getGloss synset)
-      :synonyms (->> (.getWords synset) set (remove seen) (map #(from-java dict % seen)) (lazy-seq))
       :word word
       :dict dict })))
 
@@ -77,6 +74,11 @@
               (mapcat
                 #(word-ids dict lemma % true)
                 part-of-speech))))))))
+
+(defn synonyms [m]
+   (map
+     (partial from-java (:dict m))
+     (.getWords (.getSynset ^Word (:word m)))))
 
 (defn related-synsets
   "Use a semantic pointer to fetch related synsets, returning a
