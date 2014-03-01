@@ -6,13 +6,12 @@
 (def directional-synset-pointers
   { :horizontal [:also-see :antonym :attribute
                  :pertainym :similar-to]
-    :downward   [:cause :entailment :holonym :hyponym
-                 ;:holonym-member :holonym-substance :holonym-part
-                 ]
+    :downward   [:cause :entailment :holonym
+                 :holonym-member :holonym-substance :holonym-part
+                 :hyponym]
     :upward     [:hypernym :meronym
-                 ;:meronym-member :meronym-part
-                 ;:meronym-substance
-                 ]})
+                 :meronym-member :meronym-part
+                 :meronym-substance]})
 
 (defn grouped-synsets [m direction]
   (let [synset-id (:synset-id m)

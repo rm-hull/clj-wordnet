@@ -11,10 +11,5 @@
 
 (deftest hso-relatedness
   (time
-    (is (= {:score 7 :error nil}
+    (is (= {:path [(:id car) :downward (:id bus)], :distance 2, :score 5}
            (hso/relatedness car bus)))))
-
-
-
-
-
