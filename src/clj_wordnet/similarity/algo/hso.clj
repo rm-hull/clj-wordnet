@@ -2,8 +2,7 @@
   (:refer-clojure :exclude [find])
   (:require
     [clj-wordnet.core :refer [synset-words make-dictionary]]
-    [clj-wordnet.similarity.traverser :refer :all]
-    [clj-wordnet.similarity.relatedness :refer :all]))
+    [clj-wordnet.similarity.traverser :refer :all]))
 
 (def min-score {:score 0})
 (def max-score {:score 16})

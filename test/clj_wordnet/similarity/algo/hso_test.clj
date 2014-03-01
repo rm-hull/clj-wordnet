@@ -13,5 +13,6 @@
 
 (deftest hso-relatedness
   (let [result (time (hso/relatedness car bus))]
+    (println result)
     (is (= (result :score) 5))
     (is (= (.getSynsetID (-> result :path ^IWordID last)) (bus :synset-id)))))
