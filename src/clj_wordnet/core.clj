@@ -23,7 +23,7 @@
       :pos   (-> word .getPOS .name lower-case keyword)
       :lemma (.getLemma word)
       :gloss (.getGloss synset)
-      :synonyms (->> (.getWords synset) set (remove seen) (map #(from-java dict % seen)))
+      :synonyms (->> (.getWords synset) set (remove seen) (map #(from-java dict % seen)) (lazy-seq))
       :word word
       :dict dict })))
 
