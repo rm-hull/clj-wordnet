@@ -1,12 +1,15 @@
 (ns clj-wordnet.core
-  (:use [clojure.java.io :only [file]]
-        [clojure.string :only [upper-case lower-case]])
-  (:require [clj-wordnet.coerce :as coerce]
-            [clojure.string :as s])
-  (:import [edu.mit.jwi IDictionary Dictionary RAMDictionary]
-           [edu.mit.jwi.item IIndexWord ISynset IWordID IWord Word POS]
-           [edu.mit.jwi.data ILoadPolicy]
-           [edu.mit.jwi.morph WordnetStemmer]))
+  (:use
+    [clojure.java.io :only [file]]
+    [clojure.string :only [upper-case lower-case]])
+  (:require
+    [clj-wordnet.coerce :as coerce]
+    [clojure.string :as s])
+  (:import
+    [edu.mit.jwi IDictionary Dictionary RAMDictionary]
+    [edu.mit.jwi.item IIndexWord ISynset IWordID IWord Word POS]
+    [edu.mit.jwi.data ILoadPolicy]
+    [edu.mit.jwi.morph WordnetStemmer]))
 
 ; JWI ICacheDictionary is not threadsafe
 (def coarse-lock (Object.))
@@ -45,7 +48,7 @@
               :when index-word]
           index-word))
 
-      (when-let [index-word (locking coarse-lock (.getIndexWord dict lemma pos))]
+      (when-let [^IIndexWord index-word (locking coarse-lock (.getIndexWord dict lemma pos))]
         (.getWordIDs index-word)))))
 
 (defn make-dictionary
