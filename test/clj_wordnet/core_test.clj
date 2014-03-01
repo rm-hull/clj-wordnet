@@ -10,6 +10,10 @@
 (deftest fetch-without-pos
   (is (= "dog" (:lemma (first (wordnet "dog "))))))
 
+(deftest fetch-with-pos-and-index
+  (is (= "informal term for a man; \"you lucky dog\""
+         (:gloss (wordnet "dog#n#3")))))
+
 (deftest fetch-unknown-word
   (is (empty? (wordnet "fdssfsfs"))))
 

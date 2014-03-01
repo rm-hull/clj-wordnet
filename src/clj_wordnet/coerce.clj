@@ -4,17 +4,17 @@
            [java.lang.reflect Field]))
 
 (defn- to-keyword [k]
-  (-> 
+  (->
     k
-    name 
+    name
     (str/replace "_" "-")
-    str/lower-case 
+    str/lower-case
     keyword))
 
 (defn- field-kv [^Field field]
   [ (to-keyword (.getName field)) (.get field nil) ])
 
-(def pointer 
+(def pointer
   "Attempts to coerce a keyword, symbol or string into a POINTER instance"
   (let [lut (into {} (map field-kv (.getFields Pointer)))]
     (fn [k]
@@ -22,9 +22,16 @@
         k
         (lut (to-keyword k))))))
 
-(defn pos 
+(defn pos
   "Attempts to coerce a keyword, symbol or string into a POS enum"
   [k]
-  (if (instance? POS k)
+  (cond
+    (instance? POS k)
     k
+
+    (#{"n" "v" "a" "r" "s"} (str/lower-case k))
+    (POS/getPartOfSpeech ^char (get k 0))
+
+    :else
     (POS/valueOf (str/upper-case (name k)))))
+
