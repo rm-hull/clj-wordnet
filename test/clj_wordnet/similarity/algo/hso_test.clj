@@ -4,12 +4,14 @@
     [clj-wordnet.test-client :refer [wordnet]]
     [clj-wordnet.core :refer :all]
     [clj-wordnet.similarity.traverser :refer :all]
-    [clj-wordnet.similarity.algo.hso :as hso]))
+    [clj-wordnet.similarity.algo.hso :as hso])
+  (:import
+    [edu.mit.jwi.item IWordID]))
 
 (def car (wordnet "car#n#1"))
 (def bus (wordnet "bus#n#1"))
 
 (deftest hso-relatedness
-  (time
-    (is (= {:path [(:id car) :downward (:id bus)], :distance 2, :score 5}
-           (hso/relatedness car bus)))))
+  (let [result (time (hso/relatedness car bus))]
+    (is (= (result :score) 5))
+    (is (= (.getSynsetID (-> result :path ^IWordID last)) (bus :synset-id)))))
