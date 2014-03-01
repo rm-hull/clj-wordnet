@@ -6,21 +6,24 @@
 (def directional-synset-pointers
   { :horizontal [:also-see :antonym :attribute
                  :pertainym :similar-to]
-    ;:horizontal [:antonym :attribute :similar-to]
-    :downward   [:cause :entailment :holonym
-                 :holonym-member :holonym-substance
-                 :holonym-part :hyponym]
+    :downward   [:cause :entailment :holonym :hyponym
+                 ;:holonym-member :holonym-substance :holonym-part
+                 ]
     :upward     [:hypernym :meronym
-                 :meronym-member :meronym-part
-                 :meronym-substance]})
+                 ;:meronym-member :meronym-part
+                 ;:meronym-substance
+                 ]})
 
-(def grouped-synsets
-  (memoize
-    (fn [m direction]
-      (apply merge-with (comp vec concat)
-        (map
-          (partial related-synsets m)
-          (directional-synset-pointers direction))))))
+(defn grouped-synsets [m direction]
+  (let [synset-id (:synset-id m)
+        f (memoize
+            (fn [synset-id direction]
+              (apply merge-with concat
+                (map
+                  (partial related-synsets m)
+                  (directional-synset-pointers direction)))))]
+    (f synset-id direction)))
+
 
 (defn contained? [m1 m2]
   (some identity
