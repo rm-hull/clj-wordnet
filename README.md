@@ -1,5 +1,4 @@
-Clj-WordNet
-===========
+# Clj-WordNet [![Build Status](https://secure.travis-ci.org/delver/clj-wordnet.png)](http://travis-ci.org/delver/clj-wordnet)
 
 A thin/partial wrapper around some [JWI](http://projects.csail.mit.edu/jwi/) 
 functionality, for interfacing the [WordNet](http://wordnet.princeton.edu/) 
@@ -7,14 +6,16 @@ database using idiomatic Clojure.
 
 ## Prerequisites
 
-You will need [Leiningen](https://github.com/technomancy/leiningen) 2.3.2 or
-above installed.
+You will need [Leiningen](https://github.com/technomancy/leiningen) 
+2.3.4 or above installed.
 
 ## Building
 
 To build and install the library locally, run:
 
-     lein install
+    $ git submodule update --init data
+    $ lein test
+    $ lein install
 
 ## Including in your project
 
@@ -22,7 +23,7 @@ There is an initial version hosted at [Clojars](https://clojars.org/clj-wordnet/
 For leiningen include a dependency:
 
 ```clojure
-[clj-wordnet "0.0.5"]
+[clj-wordnet "0.1.0"]
 ```
     
 For maven-based projects, add the following to your `pom.xml`:
@@ -31,16 +32,20 @@ For maven-based projects, add the following to your `pom.xml`:
 <dependency>
   <groupId>clj-wordnet</groupId>
   <artifactId>clj-wordnet</artifactId>
-  <version>0.0.5</version>
+  <version>0.1.0</version>
 </dependency>
 ```
 
+A snapshot version is also available, use ```"0.1.1-SNAPSHOT"```.
+
 ## WordNet Database
 
-The WordNet database is not bundled in this project; it must be downloaded
-separately from [here](http://wordnet.princeton.edu/wordnet/download/current-version/).
+The WordNet database is not bundled in this project; it is _referenced_ 
+via a git submodule, in order to run integration tests. In order to
+ensure the submodule is properly initialised, follow the build 
+instructions above.
 
-## Examples
+## Quick Examples
 
 ```clojure
 (def wordnet (make-dictionary "../path-to/wordnet/dict/"))
@@ -58,8 +63,8 @@ separately from [here](http://wordnet.princeton.edu/wordnet/download/current-ver
     has been domesticated by man since prehistoric times; occurs in many breeds; 
     \"the dog barked all night\""   
 
-(map :lemma (:synonyms dog))
-=> ("domestic_dog", "Canis_familiaris")
+(map :lemma (words (:synset dog))
+=> ("dog" "domestic_dog", "Canis_familiaris")
 
 (def frump (first (wordnet "frump" :noun)))
 
@@ -87,17 +92,26 @@ Note: Wordnet is quite large, and usually won’t fit into the standard heap on 
 32-bit JVMs. You need to increase your heap size. On the Sun JVM, this involves 
 the command line flag -Xmx along with a reasonable heap size, say, 500 MB or 1 GB.
 
-## Coersion
+## Word Lookup
 
-Wherever possible, using clojure keywords are preferred over JWI-specific enums and
-static constants. However, it is entirely possible to use the JWI class instances
-interchangeably. For example, 
+Word definitions can be fetched using the ```make-dictionary``` factory as per the
+example below:
 
-* the ```POS.NOUN``` enum can be replaced with ```:noun```,
+```clojure
+(def wordnet (make-dictionary "../path-to/wordnet/dict/"))
 
-* the ```Pointer.DERIVED_FROM_ADJ``` constant can be replaced with ```:derived-from-adj```
+(wordnet "car#n#1")    ; fetch the first noun definition for car
 
-Note: case is not important, and dashes are coverted to/from underscores.
+(wordnet "bus")        ; fetch a list of all definitions for bus
+
+(wordnet "row" :noun)  ; fetch a list of all noun definitions for row
+
+(wordnet "row#v#1")    ; fetch the single verb definition for row
+
+(wordnet "WID-02086723-N-01-dog" ; fetch the word with the specified ID
+
+(wordnet "SID-02086723-N" ; fetch the synset with the specified ID
+```
 
 ## See Also
 
@@ -109,19 +123,13 @@ referenced in this project's repository resolution section.
 
 * ~~Implement ```(make-dictionary "../path-to/wordnet/dict/" :in-memory)``` to use
   RAM-based dictionary~~
-
 * ~~Coerce functions into separate namespace~~
-
 * ~~Re-implement ```(related-synsets ...)``` and ```(related-words ...)```~~
-
 * ~~Push JWI 2.2.4 to central repository~~
-
-* Unit tests & Travis CI
+* ~~Unit tests & Travis CI~~
+* Implement more similarity algorithms
+* Improve performance
 
 ## License
 
 Same as JWI: MIT / [Creative Commons 3.0](http://creativecommons.org/licenses/by/3.0/legalcode)
-
-
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/delver/clj-wordnet/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
-

@@ -1,14 +1,22 @@
-(ns clj-wordnet.test.client
-  (:use [clojure.test]
-        [clj-wordnet.core]))
-
-(def wordnet (make-dictionary "../delver/resources/wordnet/"))
+(ns clj-wordnet.core-test
+  (:require
+    [clojure.test :refer :all]
+    [clj-wordnet.test-client :refer [wordnet]]
+    [clj-wordnet.core :refer :all]))
 
 (deftest fetch-with-noun
   (is (= "dog" (:lemma (first (wordnet "dog" :noun))))))
 
+(deftest fetch-exact
+  (is (= "metal supports for logs in a fireplace; \"the andirons were too hot to touch\""
+         (-> "dog#n#3" wordnet :synset :gloss))))
+
 (deftest fetch-without-pos
   (is (= "dog" (:lemma (first (wordnet "dog "))))))
+
+(deftest fetch-by-stemming
+  (is (= "dog" (:lemma (first (wordnet "dogs")))))
+  (is (= "buy" (:lemma (first (wordnet "bought"))))))
 
 (deftest fetch-unknown-word
   (is (empty? (wordnet "fdssfsfs"))))
@@ -36,8 +44,8 @@
          (map (comp str :id) (related-synsets (wordnet "SID-02086723-N") :hypernym)))))
 
 (deftest semantic-relations-test
-  (is (= '(:member-holonym :part-meronym :hyponym :hypernym)
-         (keys (semantic-relations (wordnet "SID-02086723-N"))))))
+  (is (= '(:holonym-member :hypernym :hyponym :meronym-part)
+         (sort (keys (semantic-relations (wordnet "SID-02086723-N")))))))
 
 (deftest lexical-relations-test
-  (is (:derivationally-related-form (lexical-relations (wordnet "WID-00982557-A-01-quick")))))
+  (is (:derivationally-related (lexical-relations (wordnet "WID-00982557-A-01-quick")))))
