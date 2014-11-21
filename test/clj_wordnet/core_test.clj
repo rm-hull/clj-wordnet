@@ -9,14 +9,15 @@
 
 (deftest fetch-exact
   (is (= "metal supports for logs in a fireplace; \"the andirons were too hot to touch\""
-         (-> "dog#n#3" wordnet :synset :gloss))))
+         (-> "dog#n#7" wordnet synset :gloss))))
 
 (deftest fetch-without-pos
   (is (= "dog" (:lemma (first (wordnet "dog "))))))
 
 (deftest fetch-by-stemming
-  (is (= "dog" (:lemma (first (wordnet "dogs")))))
-  (is (= "buy" (:lemma (first (wordnet "bought"))))))
+  (is (= nil (:lemma (first (wordnet "dogs")))))
+  (is (= "dog" (:lemma (first (wordnet "dogs" :stem)))))
+  (is (= "buy" (:lemma (first (wordnet "bought" :stem))))))
 
 (deftest fetch-unknown-word
   (is (empty? (wordnet "fdssfsfs"))))
@@ -49,3 +50,7 @@
 
 (deftest lexical-relations-test
   (is (:derivationally-related (lexical-relations (wordnet "WID-00982557-A-01-quick")))))
+
+(deftest hypernym-test
+  (is (= '("SID-02085998-N" "SID-01320032-N" "SID-02077948-N" "SID-01889397-N" "SID-01864419-N" "SID-01474323-N" "SID-01468898-N" "SID-00015568-N" "SID-00004475-N" "SID-00004258-N" "SID-00003553-N" "SID-00002684-N" "SID-00001930-N" "SID-00001740-N" "SID-00015568-N" "SID-00004475-N" "SID-00004258-N" "SID-00003553-N" "SID-00002684-N" "SID-00001930-N" "SID-00001740-N")
+         (map :id (hypernyms (synset (wordnet "dog#n#1")))))))

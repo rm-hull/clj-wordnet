@@ -1,7 +1,6 @@
 (ns clj-wordnet.core
   (:require [clojure.java.io :refer [file]]
             [clojure.string :refer [upper-case lower-case]]
-            [clojure.data.priority-map :refer [priority-map]]
             [clj-wordnet.coerce :as coerce]
             [clojure.string :as s]
             [clojure.set :refer :all])
@@ -44,19 +43,29 @@
    (locking coarse-lock
      (.getSynset dict synset-id))))
 
+(def ^:dynamic *stem?* false)
+
 (defn- stem [^IDictionary dict lemma part-of-speech]
   (.findStems (WordnetStemmer. dict) lemma (coerce/pos part-of-speech)))
 
-(defn- word-ids [^IDictionary dict lemma part-of-speech & [stem?]]
-  (let [pos (coerce/pos part-of-speech)]
-    (if stem?
-      (mapcat (memfn ^IIndexWord getWordIDs)
-        (for [stem (stem dict lemma part-of-speech)
-              :let [^IIndexWord index-word (locking coarse-lock (.getIndexWord dict stem pos))]
-              :when index-word]
-          index-word))
-      (when-let [^IIndexWord index-word (locking coarse-lock (.getIndexWord dict lemma pos))]
-        (.getWordIDs index-word)))))
+(defn- word-ids
+  ([^IDictionary dict part-of-speech]
+     (let [index-words (iterator-seq (locking coarse-lock (.getIndexWordIterator
+                                                           dict
+                                                           (coerce/pos part-of-speech))))]
+       (mapcat (memfn ^IIndexWord getWordIDs) index-words)))
+  ([^IDictionary dict lemma part-of-speech]
+     (let [pos (coerce/pos part-of-speech)]
+       (if *stem?*
+         (mapcat (memfn ^IIndexWord getWordIDs)
+                 (for [stem (stem dict lemma part-of-speech)
+                       :let [^IIndexWord index-word (locking coarse-lock (.getIndexWord dict stem (coerce/pos part-of-speech)))]
+                       :when index-word]
+                   index-word))
+         (when-let [^IIndexWord index-word (locking coarse-lock (.getIndexWord
+                                                                 dict lemma
+                                                                 (coerce/pos part-of-speech)))]
+           (.getWordIDs index-word))))))
 
 (defn make-dictionary
   "Initializes a dictionary implementation that mounts files on disk
@@ -69,16 +78,19 @@
                             (Dictionary. file))]
       (.open dict)
       (letfn [(lookup
-                ([^String lemma]
+                ([lemma]
                    (cond
-                    (empty? lemma)
+                    (keyword? lemma)
+                    (map (partial fetch-word dict) (word-ids dict lemma))
+
+                    (empty? ^String lemma)
                     nil
 
-                    (.startsWith lemma "WID")
-                    (fetch-word dict (WordID/parseWordID lemma))
+                    (.startsWith ^String lemma "WID")
+                    (fetch-word dict (WordID/parseWordID ^String lemma))
 
-                    (.startsWith lemma "SID")
-                    (fetch-synset dict (SynsetID/parseSynsetID lemma))
+                    (.startsWith ^String lemma "SID")
+                    (fetch-synset dict (SynsetID/parseSynsetID ^String lemma))
 
                     :else
                     (if-let [[_ lemma part-of-speech sense] (re-matches #"^(.+)#(.)#(\d+)$" lemma)]
@@ -86,12 +98,17 @@
                       (mapcat (partial lookup lemma) (POS/values)))))
 
                 ([^String lemma pos]
-                   (map (partial fetch-word dict) (word-ids dict lemma pos true)))
+                   (map (partial fetch-word dict) (word-ids dict lemma pos)))
 
                 ([^String lemma pos ^Integer sense]
                    (nth (lookup lemma pos) (dec sense))))]
 
-        lookup)))
+        (fn [& args]
+          (let [stem #{:stem}]
+            (if (some stem args)
+              (binding [*stem?* true]
+                (apply lookup (remove stem args)))
+              (apply lookup args)))))))
 
 (defn word?
   [entry]
@@ -173,6 +190,7 @@
 
 (defn instances
   [synset]
+  {:pre [(synset? synset)]}
   (let [hyponyms (related-synsets synset :hyponym)
         hyponym-instances (related-synsets synset :hyponym-instance)]
     (concat hyponym-instances (lazy-seq (mapcat instances hyponyms)))))
