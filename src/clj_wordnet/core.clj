@@ -13,8 +13,10 @@
 (def coarse-lock (Object.))
 
 (defn- from-synset
+  "Create a map from the specified synset."
   [^IDictionary dict ^ISynset synset]
-    (with-meta 
+    (with-meta ;; JWI objects are stored in metadata to allow future
+               ;; traversals
       { :id (str (.getID synset))
         :gloss (.getGloss synset)}
       { :synset synset
@@ -31,24 +33,33 @@
     { :word   word
       :dict   dict }))
 
-(defn- fetch-word [^IDictionary dict ^IWordID word-id]
+(defn- fetch-word
+  "Look up a JWI word given a word ID."
+  [^IDictionary dict ^IWordID word-id]
   (from-word
-    dict
-    (locking coarse-lock
-      (.getWord dict word-id))))
+   dict
+   (locking coarse-lock
+     (.getWord dict word-id))))
 
-(defn- fetch-synset [^IDictionary dict ^ISynsetID synset-id]
+(defn- fetch-synset
+  "Look up a JWI synset given a synset ID."
+  [^IDictionary dict ^ISynsetID synset-id]
   (from-synset
    dict
    (locking coarse-lock
      (.getSynset dict synset-id))))
 
-(def ^:dynamic *stem?* false)
+(def ^:dynamic *stem?*
+  "Whether or not to do stemming when looking up words."
+  false)
 
-(defn- stem [^IDictionary dict lemma part-of-speech]
+(defn- stem
+  "Find stems of the specified lemma and part of speech."
+  [^IDictionary dict lemma part-of-speech]
   (.findStems (WordnetStemmer. dict) lemma (coerce/pos part-of-speech)))
 
 (defn- word-ids
+  "Look up word IDs for a part of speech of particular word."
   ([^IDictionary dict part-of-speech]
      (let [index-words (iterator-seq (locking coarse-lock (.getIndexWordIterator
                                                            dict
@@ -78,43 +89,54 @@
                             (Dictionary. file))]
       (.open dict)
       (letfn [(lookup
-                ([lemma]
-                   (cond
-                    (keyword? lemma)
-                    (map (partial fetch-word dict) (word-ids dict lemma))
+                ([arg]
+                 (cond
+                  ;; Find by part of speech
+                  (keyword? arg)
+                  (map (partial fetch-word dict) (word-ids dict arg))
 
-                    (empty? ^String lemma)
-                    nil
+                  (empty? ^String arg)
+                  nil
 
-                    (.startsWith ^String lemma "WID")
-                    (fetch-word dict (WordID/parseWordID ^String lemma))
+                  ;; Find by word ID
+                  (.startsWith ^String arg "WID")
+                  (fetch-word dict (WordID/parseWordID ^String arg))
 
-                    (.startsWith ^String lemma "SID")
-                    (fetch-synset dict (SynsetID/parseSynsetID ^String lemma))
+                  ;; Find by sysnset ID
+                  (.startsWith ^String arg "SID")
+                  (fetch-synset dict (SynsetID/parseSynsetID ^String arg))
 
-                    :else
-                    (if-let [[_ lemma part-of-speech sense] (re-matches #"^(.+)#(.)#(\d+)$" lemma)]
-                      (lookup lemma part-of-speech (Integer/parseInt sense))
-                      (mapcat (partial lookup lemma) (POS/values)))))
+                  :else
+                  (if-let [[_ arg part-of-speech sense] (re-matches #"^(.+)#(.)#(\d+)$" arg)]
+                    ;; Find with a POS and sense index, e.g. dog#n#1
+                    (lookup arg part-of-speech (Integer/parseInt sense))
+                    ;; Find all matching words
+                    (mapcat (partial lookup arg) (POS/values)))))
 
                 ([^String lemma pos]
-                   (map (partial fetch-word dict) (word-ids dict lemma pos)))
+                 ;; Find by lemma and pos
+                 (map (partial fetch-word dict) (word-ids dict lemma pos)))
 
                 ([^String lemma pos ^Integer sense]
-                   (nth (lookup lemma pos) (dec sense))))]
+                 ;; Find by lemma, pos and sense index
+                 (nth (lookup lemma pos) (dec sense))))]
 
         (fn [& args]
           (let [stem #{:stem}]
+            ;; If a user puts :stem anywhere in the arg list, turn
+            ;; stemming on
             (if (some stem args)
               (binding [*stem?* true]
                 (apply lookup (remove stem args)))
               (apply lookup args)))))))
 
 (defn word?
+  "Is entry a word?"
   [entry]
   (:word (meta entry)))
 
 (defn synset?
+  "Is entry a synset?"
   [entry]
   (:synset (meta entry)))
 
@@ -164,6 +186,9 @@
     (.getRelatedWords word (coerce/keyword->pointer pointer)))))
 
 (defn lexical-relations
+  "Find all lexically related words of the specified word, returning a
+  map with lexical pointer keywords as keys, and lists of words as
+  values."
   [word]
   {:pre [(word? word)]}
   (let [{^IWord word :word ^IDictionary dict :dict} (meta word)]
@@ -174,6 +199,8 @@
               (.getRelatedMap word)))))
 
 (defn traverse
+  "Returns a lazy sequence by recursively walking the semantic
+  relations of the specified synset via the specified pointers."
   [synset & pointers]
   {:pre [(synset? synset)]}
   (let [next (mapcat (partial related-synsets synset) pointers)]
