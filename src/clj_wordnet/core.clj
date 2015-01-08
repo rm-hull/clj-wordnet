@@ -213,11 +213,20 @@
   hypernyms being strictly hyponym/hypernym."
   [synset]
   {:pre [(synset? synset)]}
-  (traverse synset :hypernym :hypernym-instance))
+  (traverse synset :hypernym))
 
 (defn instances
+  "Find synsets which describe an instance of the specified synset."
   [synset]
   {:pre [(synset? synset)]}
   (let [hyponyms (related-synsets synset :hyponym)
         hyponym-instances (related-synsets synset :hyponym-instance)]
     (concat hyponym-instances (lazy-seq (mapcat instances hyponyms)))))
+
+(defn hypernym-instances
+  "Find synsets of which the specified synset is an instance."
+  [synset]
+  {:pre [(synset? synset)]}
+  (let [hypernym-instances (related-synsets synset :hypernym-instance)]
+    (concat hypernym-instances
+            (mapcat hypernyms hypernym-instances))))

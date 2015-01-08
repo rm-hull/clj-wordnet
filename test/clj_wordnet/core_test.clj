@@ -54,3 +54,7 @@
 (deftest hypernym-test
   (is (= '("SID-02085998-N" "SID-01320032-N" "SID-02077948-N" "SID-01889397-N" "SID-01864419-N" "SID-01474323-N" "SID-01468898-N" "SID-00015568-N" "SID-00004475-N" "SID-00004258-N" "SID-00003553-N" "SID-00002684-N" "SID-00001930-N" "SID-00001740-N" "SID-00015568-N" "SID-00004475-N" "SID-00004258-N" "SID-00003553-N" "SID-00002684-N" "SID-00001930-N" "SID-00001740-N")
          (map :id (hypernyms (synset (wordnet "dog#n#1")))))))
+
+(deftest hypernym-instance-test
+  (is (= '("SID-08714745-N" "SID-08562388-N" "SID-08508836-N" "SID-08569713-N" "SID-08648560-N" "SID-00027365-N" "SID-00002684-N" "SID-00001930-N" "SID-00001740-N")
+         (map :id (hypernym-instances (synset (wordnet "england#n#1")))))))
