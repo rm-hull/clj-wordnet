@@ -63,7 +63,7 @@ instructions above.
     has been domesticated by man since prehistoric times; occurs in many breeds; 
     \"the dog barked all night\""   
 
-(map :lemma (synonyms dog))
+(map :lemma (words (:synset dog))
 => ("dog" "domestic_dog", "Canis_familiaris")
 
 (def frump (first (wordnet "frump" :noun)))
@@ -107,53 +107,11 @@ example below:
 (wordnet "row" :noun)  ; fetch a list of all noun definitions for row
 
 (wordnet "row#v#1")    ; fetch the single verb definition for row
+
+(wordnet "WID-02086723-N-01-dog" ; fetch the word with the specified ID
+
+(wordnet "SID-02086723-N" ; fetch the synset with the specified ID
 ```
-
-## Coersion
-
-Wherever possible, using clojure keywords are preferred over JWI-specific enums and
-static constants. However, it is entirely possible to use the JWI class instances
-interchangeably. For example, 
-
-* the ```POS.NOUN``` enum can be replaced with ```:noun``` or ```"n"```,
-
-* the ```Pointer.DERIVED_FROM_ADJ``` constant can be replaced with ```:derived-from-adj```
-
-Note: case is not important, and dashes are coverted to/from underscores.
-
-## Similarity
-
-Several algorithms for similarity checking between words have been/will be implemented
-
-|Namespace|Algorithm|Description|
-|:--------|:--------|-----------|
-|```clj-wordnet.similarity.algo.hso```|Hirst & St. Onge|Two lexicalized concepts are semantically close if their WordNet synsets are connected by a path that is not too long and that "does not change direction too often".|
-
-### Examples
-
-```clojure
-(require clj-wordnet.similarity.algo.hso :as hso)
-
-(def wordnet (make-dictionary "../path-to/wordnet/dict/"))
-
-(def car (wordnet "car#n#1"))
-(def bus (wordnet "bus#n#1"))
-
-(hso/relatedness car bus)
-=> {:score 5, 
-    :distance 2, 
-    :path [#<WordID WID-02961779-N-01-car> 
-           :upward #<WordID WID-04112532-N-01-roof> 
-           :downward #<WordID WID-02927500-N-0A-passenger_vehicle>]}
-
-(:id bus)
-=> #<WordID WID-02927500-N-01-bus>
-```
-
-This reads that a car and bus have a similarity score of 5 (out of 16). They are linked
-because a car has a roof, a passenger vehicle has a roof, and a bus is a passenger vehicle.
-
-
 
 ## See Also
 
@@ -171,10 +129,6 @@ referenced in this project's repository resolution section.
 * ~~Unit tests & Travis CI~~
 * Implement more similarity algorithms
 * Improve performance
-
-## References
-
-* http://www.codeproject.com/Articles/11835/WordNet-based-semantic-similarity-measurement
 
 ## License
 
